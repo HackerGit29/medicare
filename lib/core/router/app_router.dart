@@ -1,16 +1,15 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../providers/auth_provider.dart';
-import '../screens/auth_screen.dart';
-import '../screens/patient_screen.dart';
-import '../screens/home_screen.dart';
-import '../screens/doctor_screen.dart';
-import '../screens/nurse_screen.dart';
-import '../screens/lab_screen.dart';
-import '../screens/pharmacist_screen.dart';
-import '../screens/settings_screen.dart';
+import '../../features/auth/application/auth_provider.dart';
+import '../../features/auth/presentation/auth_screen.dart';
+import '../../features/patient/presentation/patient_screen.dart';
+import '../../features/dashboard/presentation/home_screen.dart';
+import '../../features/doctor/presentation/doctor_screen.dart';
+import '../../features/nurse/presentation/nurse_screen.dart';
+import '../../features/lab/presentation/lab_screen.dart';
+import '../../features/pharmacist/presentation/pharmacist_screen.dart';
+import '../../features/settings/presentation/settings_screen.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);

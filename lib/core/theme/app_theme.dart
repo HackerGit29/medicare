@@ -116,7 +116,7 @@ class AppTheme {
           ),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: bgPrimary,
         elevation: 2,
         shadowColor: shadowCardColor,
