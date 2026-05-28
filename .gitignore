@@ -48,5 +48,6 @@ app.*.map.json
 DESIGN.md 
 GEMINI.md
 implementation_plan.md
+task.md
 
 

@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../shared/models/user_model.dart';
+import '../../../shared/models/patient_model.dart';
+import '../../../shared/models/personnel_medical_model.dart';
 
 final authProvider = StateNotifierProvider<AuthNotifier, AsyncValue<User?>>((ref) {
   return AuthNotifier(ref);
@@ -17,12 +20,18 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      final role = prefs.getString('user_role');
-      final name = prefs.getString('user_name');
-      final id = prefs.getString('user_id');
+      final userType = prefs.getString('user_type');
+      final userDataStr = prefs.getString('user_data');
 
-      if (token != null && role != null && name != null && id != null) {
-        state = AsyncValue.data(User(id: id, name: name, role: role));
+      if (token != null && userType != null && userDataStr != null) {
+        final Map<String, dynamic> data = jsonDecode(userDataStr);
+        if (userType == 'patient') {
+          state = AsyncValue.data(PatientUser(Patient.fromJson(data)));
+        } else if (userType == 'personnel') {
+          state = AsyncValue.data(PersonnelUser(PersonnelMedical.fromJson(data)));
+        } else {
+          state = const AsyncValue.data(null);
+        }
       } else {
         state = const AsyncValue.data(null);
       }
@@ -45,14 +54,40 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
       if (email.contains('lab')) role = 'lab_tech';
       if (email.contains('pharm')) role = 'pharmacist';
 
-      final user = User(id: '1', role: role, name: 'Jean Dupont');
+      User user;
+      String userType;
+      String userDataStr;
+
+      if (role == 'patient') {
+        userType = 'patient';
+        final patient = Patient(
+          id: 'PAT-001',
+          nom: 'Dupont',
+          prenom: 'Jean',
+          dateNaissance: DateTime(1980, 1, 1),
+          genre: 'M',
+          creeLe: DateTime.now(),
+        );
+        user = PatientUser(patient);
+        userDataStr = jsonEncode(patient.toJson());
+      } else {
+        userType = 'personnel';
+        final personnel = PersonnelMedical(
+          id: 1,
+          nom: 'Martin',
+          prenom: 'Claire',
+          role: role,
+          identifiantPro: 'PRO-1234',
+        );
+        user = PersonnelUser(personnel);
+        userDataStr = jsonEncode(personnel.toJson());
+      }
       
       // Save token and role in SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', 'mock_jwt_token_123');
-      await prefs.setString('user_role', user.role);
-      await prefs.setString('user_name', user.name);
-      await prefs.setString('user_id', user.id);
+      await prefs.setString('user_type', userType);
+      await prefs.setString('user_data', userDataStr);
 
       state = AsyncValue.data(user);
     } catch (e) {
@@ -65,9 +100,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('auth_token');
-      await prefs.remove('user_role');
-      await prefs.remove('user_name');
-      await prefs.remove('user_id');
+      await prefs.remove('user_type');
+      await prefs.remove('user_data');
       
       state = const AsyncValue.data(null);
     } catch (e) {

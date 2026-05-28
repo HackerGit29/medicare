@@ -1,39 +1,38 @@
-class User {
-  final String id;
-  final String name;
-  final String role; // patient, doctor, nurse, lab_tech, pharmacist
+import 'patient_model.dart';
+import 'personnel_medical_model.dart';
 
-  const User({
-    required this.id,
-    required this.name,
-    required this.role,
-  });
+sealed class User {
+  String get id;
+  String get name;
+  String get role;
+}
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      role: json['role'] as String,
-    );
-  }
+class PatientUser extends User {
+  final Patient patient;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'role': role,
-    };
-  }
+  PatientUser(this.patient);
 
-  User copyWith({
-    String? id,
-    String? name,
-    String? role,
-  }) {
-    return User(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      role: role ?? this.role,
-    );
-  }
+  @override
+  String get id => patient.id;
+
+  @override
+  String get name => '${patient.prenom} ${patient.nom}';
+
+  @override
+  String get role => 'patient';
+}
+
+class PersonnelUser extends User {
+  final PersonnelMedical personnel;
+
+  PersonnelUser(this.personnel);
+
+  @override
+  String get id => personnel.id.toString();
+
+  @override
+  String get name => '${personnel.prenom} ${personnel.nom}';
+
+  @override
+  String get role => personnel.role;
 }
