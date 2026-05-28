@@ -17,10 +17,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/login',
     routes: [
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const AuthScreen(),
-      ),
+      GoRoute(path: '/login', builder: (context, state) => const AuthScreen()),
       GoRoute(
         path: '/patient',
         builder: (context, state) => const PatientScreen(),
@@ -33,14 +30,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/doctor',
         builder: (context, state) => const DoctorScreen(),
       ),
-      GoRoute(
-        path: '/nurse',
-        builder: (context, state) => const NurseScreen(),
-      ),
-      GoRoute(
-        path: '/lab',
-        builder: (context, state) => const LabScreen(),
-      ),
+      GoRoute(path: '/nurse', builder: (context, state) => const NurseScreen()),
+      GoRoute(path: '/lab', builder: (context, state) => const LabScreen()),
       GoRoute(
         path: '/pharmacist',
         builder: (context, state) => const PharmacistScreen(),

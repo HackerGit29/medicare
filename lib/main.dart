@@ -5,11 +5,7 @@ import 'core/router/app_router.dart';
 import 'shared/providers/theme_provider.dart';
 
 void main() {
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {

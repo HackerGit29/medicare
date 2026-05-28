@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/components/components.dart';
 import '../../../features/auth/application/auth_provider.dart';
@@ -201,8 +202,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             : null,
                         filled: true,
                         fillColor: AppTheme.bgPrimary,
-                        contentPadding:
-                            const EdgeInsets.symmetric(vertical: 14),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(9999),
                           borderSide: BorderSide.none,
@@ -229,9 +231,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
             // ── Results list ──
             if (_hasSearched && _results.isEmpty)
-              SliverToBoxAdapter(
-                child: _EmptySearch(query: _searchCtrl.text),
-              )
+              SliverToBoxAdapter(child: _EmptySearch(query: _searchCtrl.text))
             else if (_results.isNotEmpty)
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -245,9 +245,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               )
             else
-              SliverToBoxAdapter(
-                child: _RecentAdmissions(),
-              ),
+              SliverToBoxAdapter(child: _RecentAdmissions()),
 
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
           ],
@@ -285,9 +283,10 @@ class _QrScanButtonState extends State<_QrScanButton>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
-    _scaleAnim = Tween<double>(begin: 0.97, end: 1.03).animate(
-      CurvedAnimation(parent: _pulse, curve: Curves.easeInOut),
-    );
+    _scaleAnim = Tween<double>(
+      begin: 0.97,
+      end: 1.03,
+    ).animate(CurvedAnimation(parent: _pulse, curve: Curves.easeInOut));
   }
 
   @override
@@ -378,7 +377,8 @@ class _QrScanButtonState extends State<_QrScanButton>
                           const SizedBox(height: 14),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 6,
+                              horizontal: 14,
+                              vertical: 6,
                             ),
                             decoration: BoxDecoration(
                               color: Colors.white.withValues(alpha: 0.2),
@@ -513,7 +513,11 @@ class _EmptySearch extends StatelessWidget {
       padding: const EdgeInsets.all(40),
       child: Column(
         children: [
-          const Text('🔍', style: TextStyle(fontSize: 40)),
+          const HugeIcon(
+            icon: HugeIcons.strokeRoundedSearch01,
+            color: AppTheme.textPrimary,
+            size: 40.0,
+          ),
           const SizedBox(height: 12),
           Text(
             'Aucun résultat pour "$query"',
@@ -527,10 +531,7 @@ class _EmptySearch extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             'Vérifiez l\'orthographe ou essayez\nle matricule patient',
-            style: GoogleFonts.dmSans(
-              fontSize: 13,
-              color: AppTheme.textMuted,
-            ),
+            style: GoogleFonts.dmSans(fontSize: 13, color: AppTheme.textMuted),
             textAlign: TextAlign.center,
           ),
         ],
@@ -561,10 +562,7 @@ class _RecentAdmissions extends StatelessWidget {
               .map(
                 (p) => Padding(
                   padding: const EdgeInsets.only(bottom: 10),
-                  child: _PatientResultCard(
-                    patient: p,
-                    onCreatePassage: () {},
-                  ),
+                  child: _PatientResultCard(patient: p, onCreatePassage: () {}),
                 ),
               ),
         ],
@@ -595,8 +593,11 @@ class _QrScanSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          const Icon(Icons.qr_code_scanner_rounded,
-              size: 64, color: AppTheme.accentTeal),
+          const Icon(
+            Icons.qr_code_scanner_rounded,
+            size: 64,
+            color: AppTheme.accentTeal,
+          ),
           const SizedBox(height: 16),
           Text(
             'Scanner la carte QR',
@@ -663,10 +664,10 @@ class _Corner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLeft = alignment == Alignment.topLeft ||
-        alignment == Alignment.bottomLeft;
-    final isTop = alignment == Alignment.topLeft ||
-        alignment == Alignment.topRight;
+    final isLeft =
+        alignment == Alignment.topLeft || alignment == Alignment.bottomLeft;
+    final isTop =
+        alignment == Alignment.topLeft || alignment == Alignment.topRight;
 
     return Positioned(
       left: isLeft ? 12 : null,
@@ -677,10 +678,7 @@ class _Corner extends StatelessWidget {
         width: 24,
         height: 24,
         child: CustomPaint(
-          painter: _CornerPainter(
-            isLeft: isLeft,
-            isTop: isTop,
-          ),
+          painter: _CornerPainter(isLeft: isLeft, isTop: isTop),
         ),
       ),
     );
@@ -803,11 +801,15 @@ class _CreatePassageSheetState extends State<_CreatePassageSheet> {
             TextField(
               controller: _motifCtrl,
               maxLines: 3,
-              style: GoogleFonts.dmSans(fontSize: 14, color: AppTheme.textPrimary),
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: AppTheme.textPrimary,
+              ),
               decoration: InputDecoration(
                 hintText: 'Motif de la visite...',
                 hintStyle: GoogleFonts.dmSans(
-                  fontSize: 13, color: AppTheme.textMuted,
+                  fontSize: 13,
+                  color: AppTheme.textMuted,
                 ),
                 filled: true,
                 fillColor: AppTheme.bgSecondary,
@@ -822,7 +824,8 @@ class _CreatePassageSheetState extends State<_CreatePassageSheet> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                   borderSide: const BorderSide(
-                    color: AppTheme.accentTeal, width: 1.5,
+                    color: AppTheme.accentTeal,
+                    width: 1.5,
                   ),
                 ),
               ),

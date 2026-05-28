@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/components/components.dart';
 import '../../../features/auth/application/auth_provider.dart';
@@ -87,14 +88,16 @@ class _NurseScreenState extends ConsumerState<NurseScreen> {
                         _SummaryChip(
                           icon: Icons.pending_actions_rounded,
                           label: 'En attente',
-                          value: '${_mockPassages.where((p) => !p.constantesSaisies).length}',
+                          value:
+                              '${_mockPassages.where((p) => !p.constantesSaisies).length}',
                           color: AppTheme.accentCoral,
                         ),
                         const SizedBox(width: 10),
                         _SummaryChip(
                           icon: Icons.check_circle_outline_rounded,
                           label: 'Complétés',
-                          value: '${_mockPassages.where((p) => p.constantesSaisies).length}',
+                          value:
+                              '${_mockPassages.where((p) => p.constantesSaisies).length}',
                           color: AppTheme.accentMint,
                         ),
                       ],
@@ -131,7 +134,9 @@ class _NurseScreenState extends ConsumerState<NurseScreen> {
                       borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.shadowCardColor.withValues(alpha: 0.08),
+                          color: AppTheme.shadowCardColor.withValues(
+                            alpha: 0.08,
+                          ),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -141,9 +146,12 @@ class _NurseScreenState extends ConsumerState<NurseScreen> {
                       children: [
                         // ── Passage header ──
                         InkWell(
-                          onTap: () => setState(() =>
-                              _expandedIndex = isExpanded ? null : i),
-                          borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                          onTap: () => setState(
+                            () => _expandedIndex = isExpanded ? null : i,
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            AppTheme.radiusMd,
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(16),
                             child: Row(
@@ -154,9 +162,12 @@ class _NurseScreenState extends ConsumerState<NurseScreen> {
                                   decoration: BoxDecoration(
                                     color: p.constantesSaisies
                                         ? AppTheme.accentMint
-                                        : AppTheme.accentCoral.withValues(alpha: 0.4),
-                                    borderRadius:
-                                        BorderRadius.circular(AppTheme.radiusMd),
+                                        : AppTheme.accentCoral.withValues(
+                                            alpha: 0.4,
+                                          ),
+                                    borderRadius: BorderRadius.circular(
+                                      AppTheme.radiusMd,
+                                    ),
                                   ),
                                   child: Icon(
                                     p.constantesSaisies
@@ -169,7 +180,8 @@ class _NurseScreenState extends ConsumerState<NurseScreen> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         p.patientNom,
@@ -206,8 +218,7 @@ class _NurseScreenState extends ConsumerState<NurseScreen> {
                         ),
 
                         // ── Expanded form ──
-                        if (isExpanded)
-                          _ConstantesForm(passageId: p.id),
+                        if (isExpanded) _ConstantesForm(passageId: p.id),
                       ],
                     ),
                   );
@@ -297,15 +308,17 @@ class _ConstantesFormState extends State<_ConstantesForm> {
           Row(
             children: [
               _VitalCard(
-                emoji: '🌡️',
+                icon: HugeIcons.strokeRoundedThermometer,
                 label: 'Température (°C)',
                 controller: _tempCtrl,
                 hint: '37.5',
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
               ),
               const SizedBox(width: 10),
               _VitalCard(
-                emoji: '💉',
+                icon: HugeIcons.strokeRoundedBloodPressure,
                 label: 'Tension (mmHg)',
                 controller: _tensionCtrl,
                 hint: '120/80',
@@ -316,7 +329,7 @@ class _ConstantesFormState extends State<_ConstantesForm> {
           Row(
             children: [
               _VitalCard(
-                emoji: '❤️',
+                icon: HugeIcons.strokeRoundedHeartCheck,
                 label: 'Pouls (bpm)',
                 controller: _poulsCtrl,
                 hint: '72',
@@ -324,7 +337,7 @@ class _ConstantesFormState extends State<_ConstantesForm> {
               ),
               const SizedBox(width: 10),
               _VitalCard(
-                emoji: '🩸',
+                icon: HugeIcons.strokeRoundedDroplet,
                 label: 'SpO2 (%)',
                 controller: _spo2Ctrl,
                 hint: '98',
@@ -336,7 +349,7 @@ class _ConstantesFormState extends State<_ConstantesForm> {
           Row(
             children: [
               _VitalCard(
-                emoji: '⚖️',
+                icon: HugeIcons.strokeRoundedWeightScale,
                 label: 'Poids (kg)',
                 controller: _poidsCtrl,
                 hint: '70',
@@ -344,7 +357,7 @@ class _ConstantesFormState extends State<_ConstantesForm> {
               ),
               const SizedBox(width: 10),
               _VitalCard(
-                emoji: '📏',
+                icon: HugeIcons.strokeRoundedRuler,
                 label: 'Taille (cm)',
                 controller: _tailleCtrl,
                 hint: '175',
@@ -367,14 +380,14 @@ class _ConstantesFormState extends State<_ConstantesForm> {
 }
 
 class _VitalCard extends StatelessWidget {
-  final String emoji;
+  final List<List<dynamic>> icon;
   final String label;
   final TextEditingController controller;
   final String hint;
   final TextInputType? keyboardType;
 
   const _VitalCard({
-    required this.emoji,
+    required this.icon,
     required this.label,
     required this.controller,
     required this.hint,
@@ -395,7 +408,7 @@ class _VitalCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(emoji, style: const TextStyle(fontSize: 16)),
+                HugeIcon(icon: icon, color: AppTheme.textSecondary, size: 16.0),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
@@ -442,10 +455,7 @@ class _VitalCard extends StatelessWidget {
                   ),
                 ),
                 focusedBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(
-                    color: AppTheme.accentTeal,
-                    width: 2,
-                  ),
+                  borderSide: BorderSide(color: AppTheme.accentTeal, width: 2),
                 ),
               ),
             ),

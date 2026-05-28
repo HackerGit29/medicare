@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 class PassageMedical {
-  final String id; 
+  final String id;
   final String idPatient;
   final int idHopital;
   final int idCreateur;
@@ -11,7 +11,7 @@ class PassageMedical {
   final Map<String, dynamic>? constantesVitales;
   final String? diagnostic;
   final String? prescriptionOrdonnance;
-  final String statutPassage; 
+  final String statutPassage;
 
   const PassageMedical({
     required this.id,
@@ -31,9 +31,13 @@ class PassageMedical {
     Map<String, dynamic>? constantes;
     if (json['constantes_vitales'] != null) {
       if (json['constantes_vitales'] is String) {
-        constantes = jsonDecode(json['constantes_vitales'] as String) as Map<String, dynamic>;
+        constantes =
+            jsonDecode(json['constantes_vitales'] as String)
+                as Map<String, dynamic>;
       } else {
-        constantes = Map<String, dynamic>.from(json['constantes_vitales'] as Map);
+        constantes = Map<String, dynamic>.from(
+          json['constantes_vitales'] as Map,
+        );
       }
     }
 
@@ -43,7 +47,9 @@ class PassageMedical {
       idHopital: json['id_hopital'] as int,
       idCreateur: json['id_createur'] as int,
       dateAdmission: DateTime.parse(json['date_admission'] as String),
-      dateCloture: json['date_cloture'] != null ? DateTime.parse(json['date_cloture'] as String) : null,
+      dateCloture: json['date_cloture'] != null
+          ? DateTime.parse(json['date_cloture'] as String)
+          : null,
       motifVisite: json['motif_visite'] as String,
       constantesVitales: constantes,
       diagnostic: json['diagnostic'] as String?,
@@ -91,7 +97,8 @@ class PassageMedical {
       motifVisite: motifVisite ?? this.motifVisite,
       constantesVitales: constantesVitales ?? this.constantesVitales,
       diagnostic: diagnostic ?? this.diagnostic,
-      prescriptionOrdonnance: prescriptionOrdonnance ?? this.prescriptionOrdonnance,
+      prescriptionOrdonnance:
+          prescriptionOrdonnance ?? this.prescriptionOrdonnance,
       statutPassage: statutPassage ?? this.statutPassage,
     );
   }

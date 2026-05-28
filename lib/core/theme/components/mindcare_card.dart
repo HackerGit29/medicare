@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../app_theme.dart';
 
-
 class MindCareCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -42,10 +41,7 @@ class MindCareCard extends StatelessWidget {
     );
 
     if (onTap != null) {
-      return GestureDetector(
-        onTap: onTap,
-        child: card,
-      );
+      return GestureDetector(onTap: onTap, child: card);
     }
     return card;
   }

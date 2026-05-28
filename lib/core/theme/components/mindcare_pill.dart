@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../app_theme.dart';
 
 /// Activity category pill — colored background, title + duration + icon
@@ -7,7 +8,7 @@ import '../app_theme.dart';
 class MindCarePill extends StatelessWidget {
   final String title;
   final String? duration;
-  final String emoji;
+  final List<List<dynamic>> icon;
   final Color backgroundColor;
   final VoidCallback? onTap;
 
@@ -15,7 +16,7 @@ class MindCarePill extends StatelessWidget {
     super.key,
     required this.title,
     this.duration,
-    required this.emoji,
+    required this.icon,
     required this.backgroundColor,
     this.onTap,
   });
@@ -25,7 +26,7 @@ class MindCarePill extends StatelessWidget {
       MindCarePill(
         title: 'Mind Detox',
         duration: duration ?? '13h',
-        emoji: '🧠',
+        icon: HugeIcons.strokeRoundedBrain,
         backgroundColor: AppTheme.accentPurple,
         onTap: onTap,
       );
@@ -35,20 +36,22 @@ class MindCarePill extends StatelessWidget {
       MindCarePill(
         title: 'Gratitude Notes',
         duration: duration ?? '34h',
-        emoji: '✳️',
+        icon: HugeIcons.strokeRoundedSparkles,
         backgroundColor: AppTheme.accentCoral,
         onTap: onTap,
       );
 
   /// Preset: Conscious Breath (sage green)
-  factory MindCarePill.consciousBreath({String? duration, VoidCallback? onTap}) =>
-      MindCarePill(
-        title: 'Conscious Breath',
-        duration: duration ?? '34h',
-        emoji: '🌿',
-        backgroundColor: AppTheme.accentSage,
-        onTap: onTap,
-      );
+  factory MindCarePill.consciousBreath({
+    String? duration,
+    VoidCallback? onTap,
+  }) => MindCarePill(
+    title: 'Conscious Breath',
+    duration: duration ?? '34h',
+    icon: HugeIcons.strokeRoundedLeaf01,
+    backgroundColor: AppTheme.accentSage,
+    onTap: onTap,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -108,9 +111,10 @@ class MindCarePill extends StatelessWidget {
             Positioned(
               bottom: 0,
               right: 0,
-              child: Text(
-                emoji,
-                style: const TextStyle(fontSize: 20),
+              child: HugeIcon(
+                icon: icon,
+                color: AppTheme.textPrimary,
+                size: 20.0,
               ),
             ),
           ],
@@ -137,9 +141,16 @@ class MindCareBadge extends StatelessWidget {
 
   factory MindCareBadge.status(String status) {
     final (bg, fg) = switch (status.toLowerCase()) {
-      'ouvert' || 'open' || 'en cours' => (AppTheme.accentMint, AppTheme.textAccent),
-      'cloturé' || 'closed' || 'terminé' => (AppTheme.bgSecondary, AppTheme.textMuted),
-      'urgent' => (AppTheme.accentDot.withValues(alpha: 0.15), AppTheme.accentDot),
+      'ouvert' ||
+      'open' ||
+      'en cours' => (AppTheme.accentMint, AppTheme.textAccent),
+      'cloturé' ||
+      'closed' ||
+      'terminé' => (AppTheme.bgSecondary, AppTheme.textMuted),
+      'urgent' => (
+        AppTheme.accentDot.withValues(alpha: 0.15),
+        AppTheme.accentDot,
+      ),
       'attente' || 'pending' => (AppTheme.accentCoral, AppTheme.textPrimary),
       _ => (AppTheme.bgSecondary, AppTheme.textSecondary),
     };

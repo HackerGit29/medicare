@@ -35,7 +35,10 @@ final _mockOrdonnances = [
     id: 'ORD-002',
     patientNom: 'Aissatou Sow',
     medecinNom: 'Dr. Diallo',
-    medicaments: ['Amoxicilline 500mg - 2cp/jour', 'Sirop antitussif - 3c/jour'],
+    medicaments: [
+      'Amoxicilline 500mg - 2cp/jour',
+      'Sirop antitussif - 3c/jour',
+    ],
     datePrescription: DateTime(2026, 5, 28, 11, 30),
   ),
 ];
@@ -109,7 +112,9 @@ class _PharmacistScreenState extends ConsumerState<PharmacistScreen> {
                       borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.shadowCardColor.withValues(alpha: 0.08),
+                          color: AppTheme.shadowCardColor.withValues(
+                            alpha: 0.08,
+                          ),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -118,9 +123,12 @@ class _PharmacistScreenState extends ConsumerState<PharmacistScreen> {
                     child: Column(
                       children: [
                         InkWell(
-                          onTap: () => setState(() =>
-                              _expandedIndex = isExpanded ? null : i),
-                          borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                          onTap: () => setState(
+                            () => _expandedIndex = isExpanded ? null : i,
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            AppTheme.radiusMd,
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(16),
                             child: Row(
@@ -129,9 +137,12 @@ class _PharmacistScreenState extends ConsumerState<PharmacistScreen> {
                                   width: 44,
                                   height: 44,
                                   decoration: BoxDecoration(
-                                    color: AppTheme.accentMint.withValues(alpha: 0.25),
-                                    borderRadius:
-                                        BorderRadius.circular(AppTheme.radiusMd),
+                                    color: AppTheme.accentMint.withValues(
+                                      alpha: 0.25,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      AppTheme.radiusMd,
+                                    ),
                                   ),
                                   child: const Icon(
                                     Icons.medication_liquid_outlined,
@@ -142,7 +153,8 @@ class _PharmacistScreenState extends ConsumerState<PharmacistScreen> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         ord.patientNom,
@@ -173,8 +185,7 @@ class _PharmacistScreenState extends ConsumerState<PharmacistScreen> {
                             ),
                           ),
                         ),
-                        if (isExpanded)
-                          _DelivranceDetail(ordonnance: ord),
+                        if (isExpanded) _DelivranceDetail(ordonnance: ord),
                       ],
                     ),
                   );
@@ -256,7 +267,11 @@ class _DelivranceDetailState extends State<_DelivranceDetail> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.circle, size: 6, color: AppTheme.accentTeal),
+                      const Icon(
+                        Icons.circle,
+                        size: 6,
+                        color: AppTheme.accentTeal,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(

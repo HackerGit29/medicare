@@ -1,5 +1,5 @@
 class Patient {
-  final String id; 
+  final String id;
   final String nom;
   final String prenom;
   final DateTime dateNaissance;

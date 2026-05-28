@@ -117,7 +117,9 @@ class _LabScreenState extends ConsumerState<LabScreen> {
                           : null,
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.shadowCardColor.withValues(alpha: 0.08),
+                          color: AppTheme.shadowCardColor.withValues(
+                            alpha: 0.08,
+                          ),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -126,9 +128,12 @@ class _LabScreenState extends ConsumerState<LabScreen> {
                     child: Column(
                       children: [
                         InkWell(
-                          onTap: () => setState(() =>
-                              _expandedIndex = isExpanded ? null : i),
-                          borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                          onTap: () => setState(
+                            () => _expandedIndex = isExpanded ? null : i,
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            AppTheme.radiusMd,
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(16),
                             child: Row(
@@ -138,8 +143,9 @@ class _LabScreenState extends ConsumerState<LabScreen> {
                                   height: 44,
                                   decoration: BoxDecoration(
                                     color: AppTheme.bgTertiary,
-                                    borderRadius:
-                                        BorderRadius.circular(AppTheme.radiusMd),
+                                    borderRadius: BorderRadius.circular(
+                                      AppTheme.radiusMd,
+                                    ),
                                   ),
                                   child: const Icon(
                                     Icons.biotech_outlined,
@@ -150,7 +156,8 @@ class _LabScreenState extends ConsumerState<LabScreen> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         ex.patientNom,
@@ -187,8 +194,7 @@ class _LabScreenState extends ConsumerState<LabScreen> {
                             ),
                           ),
                         ),
-                        if (isExpanded)
-                          _ResultatForm(examenId: ex.id),
+                        if (isExpanded) _ResultatForm(examenId: ex.id),
                       ],
                     ),
                   );
@@ -267,10 +273,16 @@ class _ResultatFormState extends State<_ResultatForm> {
           TextField(
             controller: _resCtrl,
             maxLines: 4,
-            style: GoogleFonts.dmSans(fontSize: 14, color: AppTheme.textPrimary),
+            style: GoogleFonts.dmSans(
+              fontSize: 14,
+              color: AppTheme.textPrimary,
+            ),
             decoration: InputDecoration(
               hintText: 'Valeurs mesurées, observations...',
-              hintStyle: GoogleFonts.dmSans(fontSize: 13, color: AppTheme.textMuted),
+              hintStyle: GoogleFonts.dmSans(
+                fontSize: 13,
+                color: AppTheme.textMuted,
+              ),
               filled: true,
               fillColor: AppTheme.bgSecondary,
               border: OutlineInputBorder(
@@ -279,7 +291,10 @@ class _ResultatFormState extends State<_ResultatForm> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                borderSide: const BorderSide(color: AppTheme.accentTeal, width: 1.5),
+                borderSide: const BorderSide(
+                  color: AppTheme.accentTeal,
+                  width: 1.5,
+                ),
               ),
             ),
           ),

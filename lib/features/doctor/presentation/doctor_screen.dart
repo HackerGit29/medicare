@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/components/components.dart';
 import '../../../features/auth/application/auth_provider.dart';
@@ -132,7 +133,9 @@ class _DoctorScreenState extends ConsumerState<DoctorScreen>
                         borderRadius: BorderRadius.circular(9999),
                         boxShadow: [
                           BoxShadow(
-                            color: AppTheme.shadowCardColor.withValues(alpha: 0.08),
+                            color: AppTheme.shadowCardColor.withValues(
+                              alpha: 0.08,
+                            ),
                             blurRadius: 6,
                             offset: const Offset(0, 2),
                           ),
@@ -177,9 +180,7 @@ class _DoctorScreenState extends ConsumerState<DoctorScreen>
                   ),
 
                   // ── Tab 2: Dossier patient ──
-                  _ConsultationTab(
-                    dossier: _mockDossiers[_selectedPatient],
-                  ),
+                  _ConsultationTab(dossier: _mockDossiers[_selectedPatient]),
                 ],
               ),
             ),
@@ -228,9 +229,7 @@ class _PassageListTab extends StatelessWidget {
                   : AppTheme.bgPrimary,
               borderRadius: BorderRadius.circular(AppTheme.radiusMd),
               border: Border.all(
-                color: isSelected
-                    ? AppTheme.accentTeal
-                    : Colors.transparent,
+                color: isSelected ? AppTheme.accentTeal : Colors.transparent,
                 width: 1.5,
               ),
               boxShadow: [
@@ -477,14 +476,16 @@ class _ConsultationTabState extends State<_ConsultationTab> {
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
-              children: d.antecedents.map(
-                (a) => MindCareBadge(
-                  label: a,
-                  color: AppTheme.accentCoral.withValues(alpha: 0.5),
-                  textColor: AppTheme.textPrimary,
-                  icon: Icons.warning_amber_rounded,
-                ),
-              ).toList(),
+              children: d.antecedents
+                  .map(
+                    (a) => MindCareBadge(
+                      label: a,
+                      color: AppTheme.accentCoral.withValues(alpha: 0.5),
+                      textColor: AppTheme.textPrimary,
+                      icon: Icons.warning_amber_rounded,
+                    ),
+                  )
+                  .toList(),
             ),
             const SizedBox(height: 20),
           ],
@@ -492,13 +493,24 @@ class _ConsultationTabState extends State<_ConsultationTab> {
           // ── Stats row (like mockup: Breath, Notes, Detox) ──
           Row(
             children: [
-              _StatTile(icon: '🫀', label: 'Motif', value: d.motif),
+              _StatTile(
+                icon: HugeIcons.strokeRoundedHeartCheck,
+                label: 'Motif',
+                value: d.motif,
+              ),
               const SizedBox(width: 8),
-              _StatTile(icon: '🕐', value:
-                '${d.heure.hour}h${d.heure.minute.toString().padLeft(2, '0')}',
-                label: 'Arrivée'),
+              _StatTile(
+                icon: HugeIcons.strokeRoundedClock01,
+                value:
+                    '${d.heure.hour}h${d.heure.minute.toString().padLeft(2, '0')}',
+                label: 'Arrivée',
+              ),
               const SizedBox(width: 8),
-              _StatTile(icon: '🧬', label: 'Groupe', value: d.groupeSanguin),
+              _StatTile(
+                icon: HugeIcons.strokeRoundedDna,
+                label: 'Groupe',
+                value: d.groupeSanguin,
+              ),
             ],
           ),
           const SizedBox(height: 20),
@@ -571,7 +583,7 @@ class _ConsultationTabState extends State<_ConsultationTab> {
 }
 
 class _StatTile extends StatelessWidget {
-  final String icon;
+  final List<List<dynamic>> icon;
   final String label;
   final String value;
 
@@ -599,7 +611,7 @@ class _StatTile extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Text(icon, style: const TextStyle(fontSize: 18)),
+            HugeIcon(icon: icon, color: AppTheme.textPrimary, size: 20.0),
             const SizedBox(height: 4),
             Text(
               value,

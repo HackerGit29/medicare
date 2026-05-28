@@ -29,7 +29,7 @@ class AppTheme {
   // Interactive
   static const Color interactive = Color(0xFF1A3A4A);
   static const Color interactiveHover = Color(0xFF2A4A5A);
-  static const Color borderSubtle = Color(0x141A3A4A); 
+  static const Color borderSubtle = Color(0x141A3A4A);
   static const Color shadowCardColor = Color(0x141A3A4A);
 
   // Radius

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../application/auth_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/components/components.dart';
@@ -24,11 +25,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
   late Animation<Offset> _slideAnim;
 
   final _roles = [
-    ('patient', 'Patient', '🏥'),
-    ('doctor', 'Médecin', '🩺'),
-    ('nurse', 'Infirmier', '💉'),
-    ('lab', 'Laborantin', '🔬'),
-    ('pharm', 'Pharmacien', '💊'),
+    ('patient', 'Patient', HugeIcons.strokeRoundedHospital02),
+    ('doctor', 'Médecin', HugeIcons.strokeRoundedStethoscope),
+    ('nurse', 'Infirmier', HugeIcons.strokeRoundedInjection),
+    ('lab', 'Laborantin', HugeIcons.strokeRoundedMicroscope),
+    ('pharm', 'Pharmacien', HugeIcons.strokeRoundedPillsTablet),
   ];
 
   @override
@@ -58,7 +59,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     if (!_formKey.currentState!.validate()) return;
     // Prepend role prefix so auth_provider picks the right role
     final emailWithRole = '${_selectedRole}@mindcare.com';
-    await ref.read(authProvider.notifier).login(emailWithRole, _passwordCtrl.text);
+    await ref
+        .read(authProvider.notifier)
+        .login(emailWithRole, _passwordCtrl.text);
     if (mounted) {
       final err = ref.read(authProvider).error;
       if (err != null) {
@@ -92,7 +95,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Color(0xFFF2B8CC), Color(0xFFEEC8D8), Color(0xFFFFFFFF)],
+                  colors: [
+                    Color(0xFFF2B8CC),
+                    Color(0xFFEEC8D8),
+                    Color(0xFFFFFFFF),
+                  ],
                   stops: [0.0, 0.4, 1.0],
                 ),
                 borderRadius: BorderRadius.only(
@@ -124,13 +131,25 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                         ),
                       ),
                       const SizedBox(height: 28),
-                      Text(
-                        'Bienvenue\nde retour 👋',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.textPrimary,
-                          height: 1.2,
+                      RichText(
+                        text: TextSpan(
+                          style: GoogleFonts.dmSans(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.textPrimary,
+                            height: 1.2,
+                          ),
+                          children: [
+                            const TextSpan(text: 'Bienvenue\nde retour '),
+                            WidgetSpan(
+                              alignment: PlaceholderAlignment.middle,
+                              child: HugeIcon(
+                                icon: HugeIcons.strokeRoundedWavingHand01,
+                                color: AppTheme.textPrimary,
+                                size: 26.0,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -181,11 +200,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                             children: _roles.map((r) {
                               final isSelected = _selectedRole == r.$1;
                               return GestureDetector(
-                                onTap: () => setState(() => _selectedRole = r.$1),
+                                onTap: () =>
+                                    setState(() => _selectedRole = r.$1),
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 200),
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 14, vertical: 8,
+                                    horizontal: 14,
+                                    vertical: 8,
                                   ),
                                   decoration: BoxDecoration(
                                     color: isSelected
@@ -196,7 +217,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Text(r.$3, style: const TextStyle(fontSize: 14)),
+                                      HugeIcon(
+                                        icon: r.$3,
+                                        color: isSelected
+                                            ? AppTheme.textInverse
+                                            : AppTheme.textSecondary,
+                                        size: 16.0,
+                                      ),
                                       const SizedBox(width: 6),
                                       Text(
                                         r.$2,
@@ -221,8 +248,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                             controller: _emailCtrl,
                             label: 'Email / Matricule',
                             icon: Icons.person_outline_rounded,
-                            validator: (v) =>
-                                (v == null || v.isEmpty) ? 'Champ requis' : null,
+                            validator: (v) => (v == null || v.isEmpty)
+                                ? 'Champ requis'
+                                : null,
                           ),
                           const SizedBox(height: 12),
 
@@ -240,10 +268,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                                 size: 18,
                                 color: AppTheme.textMuted,
                               ),
-                              onPressed: () => setState(() => _obscure = !_obscure),
+                              onPressed: () =>
+                                  setState(() => _obscure = !_obscure),
                             ),
-                            validator: (v) =>
-                                (v == null || v.length < 4) ? 'Min. 4 caractères' : null,
+                            validator: (v) => (v == null || v.length < 4)
+                                ? 'Min. 4 caractères'
+                                : null,
                           ),
                           const SizedBox(height: 8),
 
@@ -277,7 +307,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                                 onTap: () {},
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 10,
+                                    horizontal: 16,
+                                    vertical: 10,
                                   ),
                                   decoration: BoxDecoration(
                                     color: AppTheme.bgSecondary,
@@ -342,21 +373,18 @@ class _RoundedField extends StatelessWidget {
       controller: controller,
       obscureText: obscure,
       validator: validator,
-      style: GoogleFonts.dmSans(
-        fontSize: 14,
-        color: AppTheme.textPrimary,
-      ),
+      style: GoogleFonts.dmSans(fontSize: 14, color: AppTheme.textPrimary),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: GoogleFonts.dmSans(
-          fontSize: 13,
-          color: AppTheme.textMuted,
-        ),
+        labelStyle: GoogleFonts.dmSans(fontSize: 13, color: AppTheme.textMuted),
         prefixIcon: Icon(icon, size: 18, color: AppTheme.textMuted),
         suffixIcon: suffix,
         filled: true,
         fillColor: AppTheme.bgSecondary,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(9999),
           borderSide: BorderSide.none,

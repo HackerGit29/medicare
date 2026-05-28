@@ -5,7 +5,9 @@ import '../../../shared/models/user_model.dart';
 import '../../../shared/models/patient_model.dart';
 import '../../../shared/models/personnel_medical_model.dart';
 
-final authProvider = StateNotifierProvider<AuthNotifier, AsyncValue<User?>>((ref) {
+final authProvider = StateNotifierProvider<AuthNotifier, AsyncValue<User?>>((
+  ref,
+) {
   return AuthNotifier(ref);
 });
 
@@ -28,7 +30,9 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
         if (userType == 'patient') {
           state = AsyncValue.data(PatientUser(Patient.fromJson(data)));
         } else if (userType == 'personnel') {
-          state = AsyncValue.data(PersonnelUser(PersonnelMedical.fromJson(data)));
+          state = AsyncValue.data(
+            PersonnelUser(PersonnelMedical.fromJson(data)),
+          );
         } else {
           state = const AsyncValue.data(null);
         }
@@ -43,10 +47,10 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
   Future<void> login(String email, String password) async {
     try {
       state = const AsyncValue.loading();
-      
+
       // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
-      
+
       // Determine role based on email for testing purposes
       String role = 'patient';
       if (email.contains('doctor')) role = 'doctor';
@@ -82,7 +86,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
         user = PersonnelUser(personnel);
         userDataStr = jsonEncode(personnel.toJson());
       }
-      
+
       // Save token and role in SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', 'mock_jwt_token_123');
@@ -102,7 +106,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
       await prefs.remove('auth_token');
       await prefs.remove('user_type');
       await prefs.remove('user_data');
-      
+
       state = const AsyncValue.data(null);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);

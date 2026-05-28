@@ -3,7 +3,7 @@ class PersonnelMedical {
   final int? idHopital;
   final String nom;
   final String prenom;
-  final String role; 
+  final String role;
   final String? identifiantPro;
   final String? login;
   final bool estActif;

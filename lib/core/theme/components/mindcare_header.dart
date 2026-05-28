@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../app_theme.dart';
 
 /// MindCare Header — "Good Morning, Name 👋" + notification bell
@@ -39,7 +40,17 @@ class MindCareHeader extends StatelessWidget {
               children: [
                 TextSpan(text: '${_greeting()},\n'),
                 TextSpan(text: '$userName '),
-                const TextSpan(text: '👋'),
+                WidgetSpan(
+                  alignment: PlaceholderAlignment.middle,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: HugeIcon(
+                      icon: HugeIcons.strokeRoundedWavingHand01,
+                      color: AppTheme.textPrimary,
+                      size: 22.0,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

@@ -31,7 +31,10 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.textPrimary),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppTheme.textPrimary,
+          ),
           onPressed: () => context.pop(),
         ),
       ),
@@ -102,7 +105,8 @@ class SettingsScreen extends ConsumerWidget {
                     trailing: Switch(
                       value: isDark,
                       activeColor: AppTheme.accentTeal,
-                      onChanged: (_) => ref.read(themeProvider.notifier).toggleTheme(),
+                      onChanged: (_) =>
+                          ref.read(themeProvider.notifier).toggleTheme(),
                     ),
                   ),
                   const Divider(height: 1, color: AppTheme.bgSecondary),
@@ -210,7 +214,10 @@ class _SettingsTile extends StatelessWidget {
             if (trailing != null)
               trailing!
             else if (onTap != null)
-              const Icon(Icons.chevron_right_rounded, color: AppTheme.textMuted),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppTheme.textMuted,
+              ),
           ],
         ),
       ),

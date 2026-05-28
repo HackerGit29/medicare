@@ -96,10 +96,7 @@ class _PatientScreenState extends ConsumerState<PatientScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      MindCareHeader(
-                        userName: patientName,
-                        onBellTap: () {},
-                      ),
+                      MindCareHeader(userName: patientName, onBellTap: () {}),
                       const SizedBox(height: 20),
 
                       // ── Date strip ──
@@ -152,8 +149,7 @@ class _PatientScreenState extends ConsumerState<PatientScreen> {
                       values: _chartValues,
                       days: _days,
                       selectedIndex: _selectedDay,
-                      onDaySelected: (i) =>
-                          setState(() => _selectedDay = i),
+                      onDaySelected: (i) => setState(() => _selectedDay = i),
                     ),
                     const SizedBox(height: 24),
 
@@ -309,10 +305,7 @@ class _DateStrip extends StatelessWidget {
   final int selectedDate;
   final ValueChanged<int> onDateSelected;
 
-  const _DateStrip({
-    required this.selectedDate,
-    required this.onDateSelected,
-  });
+  const _DateStrip({required this.selectedDate, required this.onDateSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -346,7 +339,11 @@ class _DateStrip extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(Icons.add, size: 14, color: AppTheme.textPrimary),
+              child: const Icon(
+                Icons.add,
+                size: 14,
+                color: AppTheme.textPrimary,
+              ),
             ),
           ],
         ),
@@ -364,7 +361,9 @@ class _DateStrip extends StatelessWidget {
                   height: 36,
                   margin: const EdgeInsets.only(right: 12),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppTheme.interactive : Colors.transparent,
+                    color: isSelected
+                        ? AppTheme.interactive
+                        : Colors.transparent,
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -372,8 +371,9 @@ class _DateStrip extends StatelessWidget {
                       '$d',
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
-                        fontWeight:
-                            isSelected ? FontWeight.w700 : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
                         color: isSelected
                             ? AppTheme.textInverse
                             : AppTheme.textSecondary,

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../app_theme.dart';
 
 enum MindCareButtonVariant { primary, secondary, ghost, danger }
+
 enum MindCareButtonSize { sm, md, lg }
 
 /// MindCare styled button — radius full, DM Sans 600
@@ -71,16 +72,10 @@ class _MindCareButtonState extends State<MindCareButton>
           SizedBox(
             width: 16,
             height: 16,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: fg,
-            ),
+            child: CircularProgressIndicator(strokeWidth: 2, color: fg),
           )
         else ...[
-          if (widget.icon != null) ...[
-            widget.icon!,
-            const SizedBox(width: 8),
-          ],
+          if (widget.icon != null) ...[widget.icon!, const SizedBox(width: 8)],
           Text(
             widget.label,
             style: GoogleFonts.dmSans(
@@ -112,7 +107,9 @@ class _MindCareButtonState extends State<MindCareButton>
           decoration: BoxDecoration(
             color: bg,
             borderRadius: BorderRadius.circular(9999),
-            border: border != null ? Border.all(color: border, width: 1.5) : null,
+            border: border != null
+                ? Border.all(color: border, width: 1.5)
+                : null,
             boxShadow: widget.variant == MindCareButtonVariant.primary
                 ? [
                     BoxShadow(
@@ -159,11 +156,7 @@ class MindCareGlassButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
 
-  const MindCareGlassButton({
-    super.key,
-    required this.label,
-    this.onPressed,
-  });
+  const MindCareGlassButton({super.key, required this.label, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
