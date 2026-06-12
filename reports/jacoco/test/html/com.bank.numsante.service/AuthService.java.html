@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">numsante</a> &gt; <a href="index.source.html" class="el_package">com.bank.numsante.service</a> &gt; <span class="el_source">AuthService.java</span></div><h1>AuthService.java</h1><pre class="source lang-java linenums">package com.bank.numsante.service;
+
+import com.bank.numsante.config.JwtTokenProvider;
+import com.bank.numsante.dto.BiometricLoginRequest;
+import com.bank.numsante.dto.BiometricRegistrationRequest;
+import com.bank.numsante.dto.LoginPatientRequest;
+import com.bank.numsante.dto.LoginRequest;
+import com.bank.numsante.entity.Patient;
+import com.bank.numsante.entity.PersonnelMedical;
+import com.bank.numsante.repository.PatientRepository;
+import com.bank.numsante.repository.PersonnelMedicalRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final PersonnelMedicalRepository personnelRepo;
+    private final PatientRepository patientRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public String loginPatient(LoginPatientRequest request) {
+<span class="fc" id="L26">        Patient patient = patientRepo.findByEmail(request.getEmail())</span>
+<span class="fc" id="L27">                .orElseThrow(() -&gt; new RuntimeException(&quot;Email ou mot de passe incorrect&quot;));</span>
+
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (!passwordEncoder.matches(request.getMotDePasse(), patient.getMotDePasseHash())) {</span>
+<span class="fc" id="L30">            throw new RuntimeException(&quot;Email ou mot de passe incorrect&quot;);</span>
+        }
+
+<span class="fc" id="L33">        return jwtTokenProvider.generateToken(patient.getEmail(), &quot;PATIENT&quot;);</span>
+    }
+
+    public String loginProfessionnel(LoginRequest request) {
+<span class="fc" id="L37">        PersonnelMedical personnel = personnelRepo.findByIdentifiantPro(request.getIdentifiantPro())</span>
+<span class="fc" id="L38">                .orElseThrow(() -&gt; new RuntimeException(&quot;Identifiants invalides&quot;));</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">        if (!passwordEncoder.matches(request.getMotDePasse(), personnel.getMotDePasseHash())) {</span>
+<span class="nc" id="L40">            throw new RuntimeException(&quot;Identifiants invalides&quot;);</span>
+        }
+<span class="fc" id="L42">        return jwtTokenProvider.generateToken(personnel.getIdentifiantPro(), personnel.getRole());</span>
+    }
+
+    public void enregistrerBiometrie(BiometricRegistrationRequest request) {
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        if (&quot;patient&quot;.equals(request.getTypeUtilisateur())) {</span>
+<span class="fc" id="L47">            Patient patient = patientRepo.findById(java.util.UUID.fromString(request.getIdUtilisateur()))</span>
+<span class="pc" id="L48">                    .orElseThrow(() -&gt; new RuntimeException(&quot;Patient introuvable&quot;));</span>
+<span class="fc" id="L49">            patient.setClePubliqueBiometrique(request.getClePubliqueAppareil());</span>
+<span class="fc" id="L50">            patientRepo.save(patient);</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        } else if (&quot;personnel&quot;.equals(request.getTypeUtilisateur())) {</span>
+<span class="nc" id="L52">            PersonnelMedical personnel = personnelRepo.findById(Long.parseLong(request.getIdUtilisateur()))</span>
+<span class="nc" id="L53">                    .orElseThrow(() -&gt; new RuntimeException(&quot;Personnel introuvable&quot;));</span>
+<span class="nc" id="L54">            personnel.setClePubliqueAppareil(request.getClePubliqueAppareil());</span>
+<span class="nc" id="L55">            personnelRepo.save(personnel);</span>
+<span class="nc" id="L56">        } else {</span>
+<span class="fc" id="L57">            throw new RuntimeException(&quot;Type utilisateur invalide&quot;);</span>
+        }
+<span class="fc" id="L59">    }</span>
+
+    // Simulation de connexion biométrique : on vérifie que la clé publique existe, puis on génère un token.
+    public String loginBiometrique(BiometricLoginRequest request) {
+        // Chercher d'abord dans les patients
+        try {
+<span class="nc" id="L65">            Patient patient = patientRepo.findById(java.util.UUID.fromString(request.getIdUtilisateur())).orElse(null);</span>
+<span class="nc bnc" id="L66" title="All 4 branches missed.">            if (patient != null &amp;&amp; patient.getClePubliqueBiometrique() != null) {</span>
+                // Dans un cas réel, on vérifierait la signature avec la clé publique.
+                // Ici on simule en acceptant toute signature non vide.
+<span class="nc bnc" id="L69" title="All 2 branches missed.">                if (!request.getSignatureDefi().isBlank()) {</span>
+<span class="nc" id="L70">                    return jwtTokenProvider.generateToken(patient.getIdPatient().toString(), &quot;PATIENT&quot;);</span>
+                }
+            }
+<span class="nc" id="L73">        } catch (IllegalArgumentException ignored) {}</span>
+        // Chercher dans le personnel
+<span class="nc" id="L75">        PersonnelMedical personnel = personnelRepo.findById(Long.parseLong(request.getIdUtilisateur()))</span>
+<span class="nc" id="L76">                .orElseThrow(() -&gt; new RuntimeException(&quot;Utilisateur introuvable&quot;));</span>
+<span class="nc bnc" id="L77" title="All 4 branches missed.">        if (personnel.getClePubliqueAppareil() != null &amp;&amp; !request.getSignatureDefi().isBlank()) {</span>
+<span class="nc" id="L78">            return jwtTokenProvider.generateToken(personnel.getIdentifiantPro(), personnel.getRole());</span>
+        }
+<span class="nc" id="L80">        throw new RuntimeException(&quot;Authentification biométrique échouée&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

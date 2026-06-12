@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomUserDetails.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">numsante</a> &gt; <a href="index.source.html" class="el_package">com.bank.numsante.security</a> &gt; <span class="el_source">CustomUserDetails.java</span></div><h1>CustomUserDetails.java</h1><pre class="source lang-java linenums">package com.bank.numsante.security;
+
+import com.bank.numsante.entity.PersonnelMedical;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.util.Collection;
+import java.util.List;
+
+public class CustomUserDetails implements UserDetails {
+    private final PersonnelMedical personnel;
+
+<span class="nc" id="L13">    public CustomUserDetails(PersonnelMedical personnel) {</span>
+<span class="nc" id="L14">        this.personnel = personnel;</span>
+<span class="nc" id="L15">    }</span>
+
+    @Override
+    public Collection&lt;? extends GrantedAuthority&gt; getAuthorities() {
+<span class="nc" id="L19">        return List.of(new SimpleGrantedAuthority(&quot;ROLE_&quot; + personnel.getRole().toUpperCase()));</span>
+    }
+
+    @Override
+<span class="nc" id="L23">    public String getPassword() { return personnel.getMotDePasseHash(); }</span>
+
+    @Override
+<span class="nc" id="L26">    public String getUsername() { return personnel.getIdentifiantPro(); }</span>
+
+    @Override
+<span class="nc" id="L29">    public boolean isAccountNonExpired() { return true; }</span>
+    @Override
+<span class="nc" id="L31">    public boolean isAccountNonLocked() { return personnel.getEstActif(); }</span>
+    @Override
+<span class="nc" id="L33">    public boolean isCredentialsNonExpired() { return true; }</span>
+    @Override
+<span class="nc" id="L35">    public boolean isEnabled() { return personnel.getEstActif(); }</span>
+
+<span class="nc" id="L37">    public PersonnelMedical getPersonnel() { return personnel; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

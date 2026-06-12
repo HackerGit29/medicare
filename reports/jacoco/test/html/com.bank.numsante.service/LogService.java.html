@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LogService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">numsante</a> &gt; <a href="index.source.html" class="el_package">com.bank.numsante.service</a> &gt; <span class="el_source">LogService.java</span></div><h1>LogService.java</h1><pre class="source lang-java linenums">package com.bank.numsante.service;
+
+import com.bank.numsante.entity.LogTracabilite;
+import com.bank.numsante.repository.LogTracabiliteRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class LogService {
+
+    private final LogTracabiliteRepository logRepo;
+    private final HttpServletRequest httpRequest;
+
+    public void logAction(Long idUtilisateur, UUID idPatient, String action, UUID idDossier) {
+<span class="nc" id="L18">        LogTracabilite log = new LogTracabilite();</span>
+<span class="nc" id="L19">        log.setIdUtilisateur(idUtilisateur);</span>
+<span class="nc" id="L20">        log.setIdPatient(idPatient);</span>
+<span class="nc" id="L21">        log.setActionEffectuee(action);</span>
+<span class="nc" id="L22">        log.setIdDossierConcerne(idDossier);</span>
+<span class="nc" id="L23">        log.setAdresseIp(httpRequest.getRemoteAddr());</span>
+<span class="nc" id="L24">        logRepo.save(log);</span>
+<span class="nc" id="L25">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

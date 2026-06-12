@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HopitalService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">numsante</a> &gt; <a href="index.source.html" class="el_package">com.bank.numsante.service</a> &gt; <span class="el_source">HopitalService.java</span></div><h1>HopitalService.java</h1><pre class="source lang-java linenums">package com.bank.numsante.service;
+
+import com.bank.numsante.dto.CreateHopitalRequest;
+import com.bank.numsante.entity.Hopital;
+import com.bank.numsante.repository.HopitalRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class HopitalService {
+
+    private final HopitalRepository hopitalRepository;
+    private final LogService logService;
+
+    @Transactional
+    public Hopital creerHopital(CreateHopitalRequest request, String adminUsername) {
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        if (hopitalRepository.existsByCodeUnique(request.getCodeUnique())) {</span>
+<span class="fc" id="L21">            throw new RuntimeException(&quot;Un hôpital avec ce code unique existe déjà&quot;);</span>
+        }
+
+<span class="fc" id="L24">        Hopital hopital = new Hopital();</span>
+<span class="fc" id="L25">        hopital.setNom(request.getNom());</span>
+<span class="fc" id="L26">        hopital.setAdresse(request.getAdresse());</span>
+<span class="fc" id="L27">        hopital.setCodeUnique(request.getCodeUnique());</span>
+
+<span class="fc" id="L29">        Hopital saved = hopitalRepository.save(hopital);</span>
+<span class="fc" id="L30">        logService.logAction(null, null, &quot;CREATION_HOPITAL_&quot; + saved.getCodeUnique(), null);</span>
+<span class="fc" id="L31">        return saved;</span>
+    }
+
+    public List&lt;Hopital&gt; getAllHopitaux() {
+<span class="fc" id="L35">        return hopitalRepository.findAll();</span>
+    }
+
+    public Hopital getHopitalById(Long id) {
+<span class="fc" id="L39">        return hopitalRepository.findById(id)</span>
+<span class="fc" id="L40">                .orElseThrow(() -&gt; new RuntimeException(&quot;Hôpital non trouvé&quot;));</span>
+    }
+
+    @Transactional
+    public Hopital updateHopital(Long id, CreateHopitalRequest request) {
+<span class="fc" id="L45">        Hopital hopital = getHopitalById(id);</span>
+<span class="fc" id="L46">        hopital.setNom(request.getNom());</span>
+<span class="fc" id="L47">        hopital.setAdresse(request.getAdresse());</span>
+<span class="fc" id="L48">        hopital.setCodeUnique(request.getCodeUnique());</span>
+<span class="fc" id="L49">        return hopitalRepository.save(hopital);</span>
+    }
+
+    @Transactional
+    public void deleteHopital(Long id) {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (!hopitalRepository.existsById(id)) {</span>
+<span class="fc" id="L55">            throw new RuntimeException(&quot;Hôpital non trouvé&quot;);</span>
+        }
+<span class="fc" id="L57">        hopitalRepository.deleteById(id);</span>
+<span class="fc" id="L58">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

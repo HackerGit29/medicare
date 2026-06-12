@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatientService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">numsante</a> &gt; <a href="index.source.html" class="el_package">com.bank.numsante.service</a> &gt; <span class="el_source">PatientService.java</span></div><h1>PatientService.java</h1><pre class="source lang-java linenums">package com.bank.numsante.service;
+
+import com.bank.numsante.dto.*;
+import com.bank.numsante.entity.*;
+import com.bank.numsante.repository.*;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.common.BitMatrix;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class PatientService {
+
+    private final PatientRepository patientRepository;
+    private final CarteNumeriqueRepository carteRepository;
+    private final PassageMedicalRepository passageRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final LogService logService;
+
+    @Transactional
+    public Map&lt;String, Object&gt; registerPatient(RegisterPatientRequest request) {
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (patientRepository.findByEmail(request.getEmail()).isPresent()) {</span>
+<span class="fc" id="L37">            throw new RuntimeException(&quot;Un patient avec cet email existe déjà&quot;);</span>
+        }
+
+<span class="fc" id="L40">        Patient patient = new Patient();</span>
+<span class="fc" id="L41">        patient.setNom(request.getNom());</span>
+<span class="fc" id="L42">        patient.setPrenom(request.getPrenom());</span>
+<span class="fc" id="L43">        patient.setDateNaissance(request.getDateNaissance());</span>
+<span class="fc" id="L44">        patient.setGenre(request.getGenre());</span>
+<span class="fc" id="L45">        patient.setGroupeSanguin(request.getGroupeSanguin());</span>
+<span class="fc" id="L46">        patient.setTelephone(request.getTelephone());</span>
+<span class="fc" id="L47">        patient.setEmail(request.getEmail());</span>
+<span class="fc" id="L48">        patient.setMotDePasseHash(passwordEncoder.encode(request.getMotDePasse()));</span>
+<span class="fc" id="L49">        patient = patientRepository.save(patient);</span>
+
+        // Génération de la carte numérique QR
+<span class="fc" id="L52">        String qrToken = genererTokenQR(patient.getIdPatient());</span>
+<span class="fc" id="L53">        CarteNumerique carte = new CarteNumerique();</span>
+<span class="fc" id="L54">        carte.setPatient(patient);</span>
+<span class="fc" id="L55">        carte.setQrCodeToken(qrToken);</span>
+<span class="fc" id="L56">        carte.setStatut(&quot;actif&quot;);</span>
+<span class="fc" id="L57">        carte.setExpireLe(LocalDate.now().plusYears(2));</span>
+<span class="fc" id="L58">        carteRepository.save(carte);</span>
+
+<span class="fc" id="L60">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L61">        response.put(&quot;idPatient&quot;, patient.getIdPatient());</span>
+<span class="fc" id="L62">        response.put(&quot;nom&quot;, patient.getNom());</span>
+<span class="fc" id="L63">        response.put(&quot;prenom&quot;, patient.getPrenom());</span>
+<span class="fc" id="L64">        response.put(&quot;email&quot;, patient.getEmail());</span>
+<span class="fc" id="L65">        response.put(&quot;qrCodeToken&quot;, qrToken);</span>
+<span class="fc" id="L66">        response.put(&quot;message&quot;, &quot;Patient enregistré avec succès.&quot;);</span>
+<span class="fc" id="L67">        return response;</span>
+    }
+
+    public List&lt;HistoriquePassageDto&gt; getHistorique(UUID idPatient) {
+<span class="fc" id="L71">        List&lt;PassageMedical&gt; passages = passageRepo.findByPatient_IdPatientOrderByDateAdmissionDesc(idPatient);</span>
+<span class="fc" id="L72">        logService.logAction(null, idPatient, &quot;LECTURE_HISTORIQUE&quot;, null);</span>
+<span class="fc" id="L73">        return passages.stream()</span>
+<span class="fc" id="L74">                .map(p -&gt; new HistoriquePassageDto(</span>
+<span class="fc" id="L75">                        p.getIdPassage(),</span>
+<span class="fc" id="L76">                        p.getHopital().getNom(),</span>
+<span class="fc" id="L77">                        p.getDateAdmission(),</span>
+<span class="fc" id="L78">                        p.getMotifVisite(),</span>
+<span class="fc" id="L79">                        p.getConstantesVitales(),</span>
+<span class="fc" id="L80">                        p.getDiagnostic(),</span>
+<span class="fc" id="L81">                        p.getPrescriptionOrdonnance(),</span>
+<span class="fc" id="L82">                        p.getStatutPassage()</span>
+                ))
+<span class="fc" id="L84">                .toList();</span>
+    }
+
+    public PageResponse&lt;Patient&gt; getAllPatients(int page, int size, String search) {
+        Page&lt;Patient&gt; patientPage;
+<span class="nc bnc" id="L89" title="All 4 branches missed.">        if (search != null &amp;&amp; !search.isEmpty()) {</span>
+<span class="nc" id="L90">            patientPage = patientRepository.findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(</span>
+<span class="nc" id="L91">                    search, search, PageRequest.of(page, size));</span>
+        } else {
+<span class="nc" id="L93">            patientPage = patientRepository.findAll(PageRequest.of(page, size));</span>
+        }
+<span class="nc" id="L95">        return PageResponse.&lt;Patient&gt;builder()</span>
+<span class="nc" id="L96">                .content(patientPage.getContent())</span>
+<span class="nc" id="L97">                .page(patientPage.getNumber())</span>
+<span class="nc" id="L98">                .size(patientPage.getSize())</span>
+<span class="nc" id="L99">                .totalElements(patientPage.getTotalElements())</span>
+<span class="nc" id="L100">                .totalPages(patientPage.getTotalPages())</span>
+<span class="nc" id="L101">                .last(patientPage.isLast())</span>
+<span class="nc" id="L102">                .first(patientPage.isFirst())</span>
+<span class="nc" id="L103">                .build();</span>
+    }
+
+    @Transactional
+    public Patient updatePatient(UUID idPatient, UpdatePatientRequest request) {
+<span class="fc" id="L108">        Patient patient = patientRepository.findById(idPatient)</span>
+<span class="fc" id="L109">                .orElseThrow(() -&gt; new RuntimeException(&quot;Patient non trouvé&quot;));</span>
+
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        if (request.getNom() != null) patient.setNom(request.getNom());</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if (request.getPrenom() != null) patient.setPrenom(request.getPrenom());</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">        if (request.getDateNaissance() != null) patient.setDateNaissance(request.getDateNaissance());</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">        if (request.getTelephone() != null) patient.setTelephone(request.getTelephone());</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">        if (request.getGroupeSanguin() != null) patient.setGroupeSanguin(request.getGroupeSanguin());</span>
+
+<span class="fc" id="L117">        return patientRepository.save(patient);</span>
+    }
+
+    public List&lt;Patient&gt; searchPatients(String query) {
+<span class="nc" id="L121">        return patientRepository.findByNomContainingIgnoreCase(query);</span>
+    }
+
+    public Patient getPatientById(UUID idPatient) {
+<span class="fc" id="L125">        return patientRepository.findById(idPatient)</span>
+<span class="fc" id="L126">                .orElseThrow(() -&gt; new RuntimeException(&quot;Patient non trouvé&quot;));</span>
+    }
+
+    @Transactional
+    public Map&lt;String, Object&gt; renouvelerCarte(UUID idPatient) {
+<span class="fc" id="L131">        Patient patient = getPatientById(idPatient);</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">        if (patient.getCarteNumerique() != null) {</span>
+<span class="fc" id="L133">            patient.getCarteNumerique().setStatut(&quot;remplacee&quot;);</span>
+<span class="fc" id="L134">            carteRepository.save(patient.getCarteNumerique());</span>
+        }
+
+<span class="fc" id="L137">        String qrToken = genererTokenQR(patient.getIdPatient());</span>
+<span class="fc" id="L138">        CarteNumerique nouvelleCarte = new CarteNumerique();</span>
+<span class="fc" id="L139">        nouvelleCarte.setPatient(patient);</span>
+<span class="fc" id="L140">        nouvelleCarte.setQrCodeToken(qrToken);</span>
+<span class="fc" id="L141">        nouvelleCarte.setStatut(&quot;actif&quot;);</span>
+<span class="fc" id="L142">        nouvelleCarte.setExpireLe(LocalDate.now().plusYears(2));</span>
+<span class="fc" id="L143">        carteRepository.save(nouvelleCarte);</span>
+
+<span class="fc" id="L145">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L146">        response.put(&quot;message&quot;, &quot;Carte renouvelée avec succès&quot;);</span>
+<span class="fc" id="L147">        response.put(&quot;qrCodeToken&quot;, qrToken);</span>
+<span class="fc" id="L148">        response.put(&quot;dateExpiration&quot;, nouvelleCarte.getExpireLe().toString());</span>
+<span class="fc" id="L149">        return response;</span>
+    }
+
+    @Transactional
+    public Map&lt;String, Object&gt; suspendreCarte(UUID idPatient, String motif) {
+<span class="fc" id="L154">        Patient patient = getPatientById(idPatient);</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        if (patient.getCarteNumerique() == null) {</span>
+<span class="fc" id="L156">            throw new RuntimeException(&quot;Aucune carte trouvée&quot;);</span>
+        }
+<span class="fc" id="L158">        patient.getCarteNumerique().setStatut(motif);</span>
+<span class="fc" id="L159">        carteRepository.save(patient.getCarteNumerique());</span>
+<span class="fc" id="L160">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L161">        response.put(&quot;message&quot;, &quot;Carte &quot; + motif + &quot; avec succès&quot;);</span>
+<span class="fc" id="L162">        return response;</span>
+    }
+
+    public byte[] genererImageQR(String texte) {
+<span class="nc" id="L166">        int width = 300;</span>
+<span class="nc" id="L167">        int height = 300;</span>
+        try {
+<span class="nc" id="L169">            QRCodeWriter qrCodeWriter = new QRCodeWriter();</span>
+<span class="nc" id="L170">            BitMatrix bitMatrix = qrCodeWriter.encode(texte, BarcodeFormat.QR_CODE, width, height);</span>
+
+<span class="nc" id="L172">            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);</span>
+<span class="nc" id="L173">            image.createGraphics();</span>
+<span class="nc" id="L174">            Graphics2D graphics = (Graphics2D) image.getGraphics();</span>
+<span class="nc" id="L175">            graphics.setColor(Color.WHITE);</span>
+<span class="nc" id="L176">            graphics.fillRect(0, 0, width, height);</span>
+<span class="nc" id="L177">            graphics.setColor(Color.BLACK);</span>
+
+<span class="nc bnc" id="L179" title="All 2 branches missed.">            for (int x = 0; x &lt; width; x++) {</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">                for (int y = 0; y &lt; height; y++) {</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">                    if (bitMatrix.get(x, y)) {</span>
+<span class="nc" id="L182">                        graphics.fillRect(x, y, 1, 1);</span>
+                    }
+                }
+            }
+
+<span class="nc" id="L187">            ByteArrayOutputStream baos = new ByteArrayOutputStream();</span>
+<span class="nc" id="L188">            ImageIO.write(image, &quot;png&quot;, baos);</span>
+<span class="nc" id="L189">            return baos.toByteArray();</span>
+<span class="nc" id="L190">        } catch (Exception e) {</span>
+<span class="nc" id="L191">            throw new RuntimeException(&quot;Erreur lors de la génération du QR code&quot;, e);</span>
+        }
+    }
+
+    private String genererTokenQR(UUID patientId) {
+<span class="fc" id="L196">        String raw = patientId.toString() + &quot;-&quot; + System.currentTimeMillis() + &quot;-&quot; + UUID.randomUUID();</span>
+<span class="fc" id="L197">        return Base64.getUrlEncoder().withoutPadding().encodeToString(raw.getBytes());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

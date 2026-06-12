@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataInitializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">numsante</a> &gt; <a href="index.source.html" class="el_package">com.bank.numsante.config</a> &gt; <span class="el_source">DataInitializer.java</span></div><h1>DataInitializer.java</h1><pre class="source lang-java linenums">package com.bank.numsante.config;
+
+import com.bank.numsante.entity.*;
+import com.bank.numsante.repository.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class DataInitializer implements CommandLineRunner {
+
+    private final HopitalRepository hopitalRepo;
+    private final PersonnelMedicalRepository personnelRepo;
+    private final PatientRepository patientRepo;
+    private final CarteNumeriqueRepository carteRepo;
+    private final PasswordEncoder encoder;
+
+    @Override
+    public void run(String... args) {
+<span class="pc bpc" id="L22" title="1 of 2 branches missed.">        if (hopitalRepo.count() == 0) {</span>
+            // Créer 2 hôpitaux
+<span class="fc" id="L24">            Hopital h1 = new Hopital();</span>
+<span class="fc" id="L25">            h1.setNom(&quot;Hôpital Général de Yaoundé&quot;);</span>
+<span class="fc" id="L26">            h1.setAdresse(&quot;Yaoundé, Centre&quot;);</span>
+<span class="fc" id="L27">            h1.setCodeUnique(&quot;HGY-CMR&quot;);</span>
+<span class="fc" id="L28">            hopitalRepo.save(h1);</span>
+
+<span class="fc" id="L30">            Hopital h2 = new Hopital();</span>
+<span class="fc" id="L31">            h2.setNom(&quot;Hôpital Central de Douala&quot;);</span>
+<span class="fc" id="L32">            h2.setAdresse(&quot;Douala, Littoral&quot;);</span>
+<span class="fc" id="L33">            h2.setCodeUnique(&quot;HCD-CMR&quot;);</span>
+<span class="fc" id="L34">            hopitalRepo.save(h2);</span>
+
+            // Créer personnel pour chaque rôle
+<span class="fc" id="L37">            String encodedPassword = encoder.encode(&quot;passer123&quot;);</span>
+
+            // Admin
+<span class="fc" id="L40">            creerPersonnel(personnelRepo, h1, &quot;Admin&quot;, &quot;Système&quot;, &quot;admin&quot;, &quot;admin_sys&quot;, encodedPassword);</span>
+
+            // Médecins
+<span class="fc" id="L43">            creerPersonnel(personnelRepo, h1, &quot;Mballa&quot;, &quot;Jean&quot;, &quot;medecin&quot;, &quot;dr_mballa&quot;, encodedPassword);</span>
+<span class="fc" id="L44">            creerPersonnel(personnelRepo, h2, &quot;Kamga&quot;, &quot;Marie&quot;, &quot;medecin&quot;, &quot;dr_kamga&quot;, encodedPassword);</span>
+
+            // Infirmiers
+<span class="fc" id="L47">            creerPersonnel(personnelRepo, h1, &quot;Ngo&quot;, &quot;Sophie&quot;, &quot;infirmier&quot;, &quot;inf_ngo&quot;, encodedPassword);</span>
+<span class="fc" id="L48">            creerPersonnel(personnelRepo, h2, &quot;Tchinda&quot;, &quot;Paul&quot;, &quot;infirmier&quot;, &quot;inf_tchinda&quot;, encodedPassword);</span>
+
+            // Accueil
+<span class="fc" id="L51">            creerPersonnel(personnelRepo, h1, &quot;Eyanga&quot;, &quot;Christine&quot;, &quot;accueil&quot;, &quot;acc_eyanga&quot;, encodedPassword);</span>
+<span class="fc" id="L52">            creerPersonnel(personnelRepo, h2, &quot;Mbarga&quot;, &quot;David&quot;, &quot;accueil&quot;, &quot;acc_mbarga&quot;, encodedPassword);</span>
+
+            // Laborantins
+<span class="fc" id="L55">            creerPersonnel(personnelRepo, h1, &quot;Ekobo&quot;, &quot;Alain&quot;, &quot;laborantin&quot;, &quot;lab_ekobo&quot;, encodedPassword);</span>
+<span class="fc" id="L56">            creerPersonnel(personnelRepo, h2, &quot;Belinga&quot;, &quot;Esther&quot;, &quot;laborantin&quot;, &quot;lab_belinga&quot;, encodedPassword);</span>
+
+            // Pharmaciens
+<span class="fc" id="L59">            creerPersonnel(personnelRepo, h1, &quot;Owona&quot;, &quot;Pierre&quot;, &quot;pharmacien&quot;, &quot;ph_owona&quot;, encodedPassword);</span>
+<span class="fc" id="L60">            creerPersonnel(personnelRepo, h2, &quot;Atangana&quot;, &quot;Lucie&quot;, &quot;pharmacien&quot;, &quot;ph_atangana&quot;, encodedPassword);</span>
+
+<span class="fc" id="L62">            System.out.println(&quot;✅ Données de test initialisées avec succès !&quot;);</span>
+<span class="fc" id="L63">            System.out.println(&quot;📋 Comptes disponibles :&quot;);</span>
+<span class="fc" id="L64">            System.out.println(&quot;   admin_sys / passer123 (ADMIN)&quot;);</span>
+<span class="fc" id="L65">            System.out.println(&quot;   dr_mballa / passer123 (MEDECIN)&quot;);</span>
+<span class="fc" id="L66">            System.out.println(&quot;   inf_ngo / passer123 (INFIRMIER)&quot;);</span>
+<span class="fc" id="L67">            System.out.println(&quot;   acc_eyanga / passer123 (ACCUEIL)&quot;);</span>
+<span class="fc" id="L68">            System.out.println(&quot;   lab_ekobo / passer123 (LABORANTIN)&quot;);</span>
+<span class="fc" id="L69">            System.out.println(&quot;   ph_owona / passer123 (PHARMACIEN)&quot;);</span>
+        }
+<span class="fc" id="L71">    }</span>
+
+    private void creerPersonnel(PersonnelMedicalRepository repo, Hopital hopital,
+                                String nom, String prenom, String role,
+                                String identifiant, String password) {
+<span class="fc" id="L76">        PersonnelMedical p = new PersonnelMedical();</span>
+<span class="fc" id="L77">        p.setHopital(hopital);</span>
+<span class="fc" id="L78">        p.setNom(nom);</span>
+<span class="fc" id="L79">        p.setPrenom(prenom);</span>
+<span class="fc" id="L80">        p.setRole(role);</span>
+<span class="fc" id="L81">        p.setIdentifiantPro(identifiant);</span>
+<span class="fc" id="L82">        p.setMotDePasseHash(password);</span>
+<span class="fc" id="L83">        p.setEstActif(true);</span>
+<span class="fc" id="L84">        repo.save(p);</span>
+<span class="fc" id="L85">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

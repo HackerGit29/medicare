@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RapportService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">numsante</a> &gt; <a href="index.source.html" class="el_package">com.bank.numsante.service</a> &gt; <span class="el_source">RapportService.java</span></div><h1>RapportService.java</h1><pre class="source lang-java linenums">package com.bank.numsante.service;
+
+import com.bank.numsante.dto.DashboardStats;
+import com.bank.numsante.repository.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+
+@Service
+@RequiredArgsConstructor
+public class RapportService {
+
+    private final PatientRepository patientRepo;
+    private final HopitalRepository hopitalRepo;
+    private final PersonnelMedicalRepository personnelRepo;
+    private final PassageMedicalRepository passageRepo;
+    private final ExamenLaboratoireRepository examenRepo;
+    private final PrescriptionMedicamentRepository prescriptionRepo;
+
+    public DashboardStats getDashboardStats() {
+<span class="fc" id="L21">        LocalDateTime debutJournee = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);</span>
+
+<span class="fc" id="L23">        return DashboardStats.builder()</span>
+<span class="fc" id="L24">                .totalPatients(patientRepo.count())</span>
+<span class="fc" id="L25">                .totalHopitaux(hopitalRepo.count())</span>
+<span class="fc" id="L26">                .totalPersonnel(personnelRepo.count())</span>
+<span class="fc" id="L27">                .totalPassagesAujourdhui(passageRepo.countByDateAdmissionAfter(debutJournee))</span>
+<span class="fc" id="L28">                .totalPassagesEnCours(passageRepo.countByStatutPassage(&quot;en_cours&quot;))</span>
+<span class="fc" id="L29">                .totalExamensRealises(examenRepo.count())</span>
+<span class="fc" id="L30">                .totalOrdonnances(prescriptionRepo.countByDelivre(true))</span>
+<span class="fc" id="L31">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

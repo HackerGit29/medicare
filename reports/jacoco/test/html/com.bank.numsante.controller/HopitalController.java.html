@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HopitalController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">numsante</a> &gt; <a href="index.source.html" class="el_package">com.bank.numsante.controller</a> &gt; <span class="el_source">HopitalController.java</span></div><h1>HopitalController.java</h1><pre class="source lang-java linenums">package com.bank.numsante.controller;
+
+import com.bank.numsante.dto.CreateHopitalRequest;
+import com.bank.numsante.entity.Hopital;
+import com.bank.numsante.service.HopitalService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/hopitaux&quot;)
+@RequiredArgsConstructor
+@SecurityRequirement(name = &quot;BearerAuth&quot;)
+public class HopitalController {
+
+    private final HopitalService hopitalService;
+
+    @PostMapping
+    @Operation(summary = &quot;Créer un nouvel hôpital (ADMIN)&quot;)
+    public ResponseEntity&lt;Hopital&gt; creerHopital(@Valid @RequestBody CreateHopitalRequest request,
+                                                Authentication authentication) {
+<span class="nc" id="L28">        return ResponseEntity.status(HttpStatus.CREATED)</span>
+<span class="nc" id="L29">                .body(hopitalService.creerHopital(request, authentication.getName()));</span>
+    }
+
+    @GetMapping
+    @Operation(summary = &quot;Liste tous les hôpitaux&quot;)
+    public ResponseEntity&lt;List&lt;Hopital&gt;&gt; getAllHopitaux() {
+<span class="nc" id="L35">        return ResponseEntity.ok(hopitalService.getAllHopitaux());</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Détails d'un hôpital&quot;)
+    public ResponseEntity&lt;Hopital&gt; getHopitalById(@PathVariable Long id) {
+<span class="nc" id="L41">        return ResponseEntity.ok(hopitalService.getHopitalById(id));</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Modifier un hôpital (ADMIN)&quot;)
+    public ResponseEntity&lt;Hopital&gt; updateHopital(@PathVariable Long id,
+                                                 @Valid @RequestBody CreateHopitalRequest request) {
+<span class="nc" id="L48">        return ResponseEntity.ok(hopitalService.updateHopital(id, request));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    @Operation(summary = &quot;Supprimer un hôpital (ADMIN)&quot;)
+    public ResponseEntity&lt;Void&gt; deleteHopital(@PathVariable Long id) {
+<span class="nc" id="L54">        hopitalService.deleteHopital(id);</span>
+<span class="nc" id="L55">        return ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

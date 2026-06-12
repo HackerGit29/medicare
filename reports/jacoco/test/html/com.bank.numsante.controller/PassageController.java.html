@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PassageController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">numsante</a> &gt; <a href="index.source.html" class="el_package">com.bank.numsante.controller</a> &gt; <span class="el_source">PassageController.java</span></div><h1>PassageController.java</h1><pre class="source lang-java linenums">package com.bank.numsante.controller;
+
+import com.bank.numsante.dto.ConstantesVitalesRequest;
+import com.bank.numsante.dto.ConsultationRequest;
+import com.bank.numsante.dto.PageResponse;
+import com.bank.numsante.entity.PassageMedical;
+import com.bank.numsante.service.PassageService;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+@RestController
+@RequestMapping(&quot;/passages&quot;)
+@RequiredArgsConstructor
+public class PassageController {
+
+    private final PassageService passageService;
+
+    @Operation(summary = &quot;Mettre à jour les constantes vitales d’un passage&quot;)
+    @PutMapping(&quot;/{idPassage}/constantes&quot;)
+    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; updateConstantes(@PathVariable UUID idPassage,
+                                                                @Valid @RequestBody ConstantesVitalesRequest request,
+                                                                Authentication authentication) {
+<span class="nc" id="L31">        passageService.updateConstantes(idPassage, request, authentication.getName());</span>
+<span class="nc" id="L32">        return ResponseEntity.ok(Map.of(&quot;message&quot;, &quot;Constantes vitales mises à jour avec succès&quot;));</span>
+    }
+
+    @Operation(summary = &quot;Ajouter diagnostic / prescription et éventuellement clôturer le passage&quot;)
+    @PutMapping(&quot;/{idPassage}/consultation&quot;)
+    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; ajouterConsultation(@PathVariable UUID idPassage,
+                                                                   @Valid @RequestBody ConsultationRequest request,
+                                                                   Authentication authentication) {
+<span class="nc" id="L40">        passageService.ajouterConsultation(idPassage, request, authentication.getName());</span>
+<span class="nc" id="L41">        return ResponseEntity.ok(Map.of(&quot;message&quot;, &quot;Dossier de consultation enregistré et archivé&quot;));</span>
+    }
+
+    @GetMapping(&quot;/hopital/{idHopital}&quot;)
+    @Operation(summary = &quot;Passages par hôpital avec pagination&quot;)
+    public ResponseEntity&lt;PageResponse&lt;PassageMedical&gt;&gt; getPassagesByHopital(
+            @PathVariable Long idHopital,
+            @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @RequestParam(defaultValue = &quot;20&quot;) int size) {
+<span class="nc" id="L50">        return ResponseEntity.ok(passageService.getPassagesByHopital(idHopital, page, size));</span>
+    }
+
+    @GetMapping(&quot;/en-cours/{idHopital}&quot;)
+    @Operation(summary = &quot;Passages en cours dans un hôpital&quot;)
+    public ResponseEntity&lt;List&lt;PassageMedical&gt;&gt; getPassagesEnCours(@PathVariable Long idHopital) {
+<span class="nc" id="L56">        return ResponseEntity.ok(passageService.getPassagesEnCours(idHopital));</span>
+    }
+
+    @DeleteMapping(&quot;/{idPassage}&quot;)
+    @Operation(summary = &quot;Annuler un passage&quot;)
+    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; annulerPassage(@PathVariable UUID idPassage,
+                                                              Authentication authentication) {
+<span class="nc" id="L63">        passageService.annulerPassage(idPassage, authentication.getName());</span>
+<span class="nc" id="L64">        return ResponseEntity.ok(Map.of(&quot;message&quot;, &quot;Passage annulé avec succès&quot;));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

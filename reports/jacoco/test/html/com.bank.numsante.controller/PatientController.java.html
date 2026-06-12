@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatientController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">numsante</a> &gt; <a href="index.source.html" class="el_package">com.bank.numsante.controller</a> &gt; <span class="el_source">PatientController.java</span></div><h1>PatientController.java</h1><pre class="source lang-java linenums">package com.bank.numsante.controller;
+
+import com.bank.numsante.dto.*;
+import com.bank.numsante.entity.Patient;
+import com.bank.numsante.service.PatientService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+@RestController
+@RequestMapping(&quot;/patients&quot;)
+@RequiredArgsConstructor
+@SecurityRequirement(name = &quot;BearerAuth&quot;)
+public class PatientController {
+
+    private final PatientService patientService;
+
+    @Operation(summary = &quot;Enregistrer un nouveau patient&quot;)
+    @PostMapping(&quot;/register&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; registerPatient(@Valid @RequestBody RegisterPatientRequest request) {
+<span class="nc" id="L31">        return ResponseEntity.status(HttpStatus.CREATED)</span>
+<span class="nc" id="L32">                .body(patientService.registerPatient(request));</span>
+    }
+
+    @Operation(summary = &quot;Historique médical d’un patient&quot;)
+    @GetMapping(&quot;/{idPatient}/historique&quot;)
+    public ResponseEntity&lt;List&lt;HistoriquePassageDto&gt;&gt; getHistorique(@PathVariable UUID idPatient) {
+<span class="nc" id="L38">        return ResponseEntity.ok(patientService.getHistorique(idPatient));</span>
+    }
+
+    @Operation(summary = &quot;Générer l'image QR code du patient&quot;)
+    @GetMapping(&quot;/{idPatient}/qr-code&quot;)
+    public ResponseEntity&lt;byte[]&gt; genererQRCode(@PathVariable UUID idPatient) {
+<span class="nc" id="L44">        Patient patient = patientService.getPatientById(idPatient);</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (patient.getCarteNumerique() == null) {</span>
+<span class="nc" id="L46">            throw new RuntimeException(&quot;Aucune carte QR associée à ce patient&quot;);</span>
+        }
+<span class="nc" id="L48">        byte[] qrCodeImage = patientService.genererImageQR(patient.getCarteNumerique().getQrCodeToken());</span>
+<span class="nc" id="L49">        return ResponseEntity.ok()</span>
+<span class="nc" id="L50">                .contentType(MediaType.IMAGE_PNG)</span>
+<span class="nc" id="L51">                .body(qrCodeImage);</span>
+    }
+
+    @Operation(summary = &quot;Liste de tous les patients avec pagination et recherche&quot;)
+    @GetMapping
+    public ResponseEntity&lt;PageResponse&lt;Patient&gt;&gt; getAllPatients(
+            @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @RequestParam(defaultValue = &quot;20&quot;) int size,
+            @RequestParam(required = false) String search) {
+<span class="nc" id="L60">        return ResponseEntity.ok(patientService.getAllPatients(page, size, search));</span>
+    }
+
+    @Operation(summary = &quot;Détails d'un patient&quot;)
+    @GetMapping(&quot;/{idPatient}&quot;)
+    public ResponseEntity&lt;Patient&gt; getPatientById(@PathVariable UUID idPatient) {
+<span class="nc" id="L66">        return ResponseEntity.ok(patientService.getPatientById(idPatient));</span>
+    }
+
+    @Operation(summary = &quot;Modifier les informations d'un patient&quot;)
+    @PutMapping(&quot;/{idPatient}&quot;)
+    public ResponseEntity&lt;Patient&gt; updatePatient(@PathVariable UUID idPatient,
+                                                 @Valid @RequestBody UpdatePatientRequest request) {
+<span class="nc" id="L73">        return ResponseEntity.ok(patientService.updatePatient(idPatient, request));</span>
+    }
+
+    @Operation(summary = &quot;Rechercher un patient par nom&quot;)
+    @GetMapping(&quot;/search&quot;)
+    public ResponseEntity&lt;List&lt;Patient&gt;&gt; searchPatients(@RequestParam String query) {
+<span class="nc" id="L79">        return ResponseEntity.ok(patientService.searchPatients(query));</span>
+    }
+
+    @Operation(summary = &quot;Renouveler la carte QR d'un patient&quot;)
+    @PostMapping(&quot;/{idPatient}/renouveler-carte&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; renouvelerCarte(@PathVariable UUID idPatient) {
+<span class="nc" id="L85">        return ResponseEntity.ok(patientService.renouvelerCarte(idPatient));</span>
+    }
+
+    @Operation(summary = &quot;Suspendre ou marquer comme perdue la carte QR&quot;)
+    @PostMapping(&quot;/{idPatient}/suspendre-carte&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; suspendreCarte(
+            @PathVariable UUID idPatient,
+            @RequestParam(defaultValue = &quot;suspendu&quot;) String motif) {
+<span class="nc" id="L93">        return ResponseEntity.ok(patientService.suspendreCarte(idPatient, motif));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

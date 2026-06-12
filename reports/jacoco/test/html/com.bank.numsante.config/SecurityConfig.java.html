@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SecurityConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">numsante</a> &gt; <a href="index.source.html" class="el_package">com.bank.numsante.config</a> &gt; <span class="el_source">SecurityConfig.java</span></div><h1>SecurityConfig.java</h1><pre class="source lang-java linenums">package com.bank.numsante.config;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
+public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthFilter;
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+<span class="fc" id="L24">        http</span>
+<span class="fc" id="L25">                .csrf(csrf -&gt; csrf.disable())</span>
+<span class="fc" id="L26">                .sessionManagement(sm -&gt; sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))</span>
+<span class="fc" id="L27">                .authorizeHttpRequests(auth -&gt; auth</span>
+                        // Public
+<span class="fc" id="L29">                        .requestMatchers(</span>
+                                &quot;/auth/login-professionnel&quot;,
+                                &quot;/auth/login-patient&quot;,
+                                &quot;/auth/register-patient&quot;,
+                                &quot;/auth/login-biometrique&quot;,
+                                &quot;/auth/enregistrer-biometrie&quot;,
+                                &quot;/swagger-ui/**&quot;,
+                                &quot;/swagger-ui.html&quot;,
+                                &quot;/v3/api-docs/**&quot;,
+                                &quot;/api-docs/**&quot;,
+                                &quot;/actuator/health&quot;
+<span class="fc" id="L40">                        ).permitAll()</span>
+
+                        // Admin
+<span class="fc" id="L43">                        .requestMatchers(&quot;/admin/**&quot;).hasRole(&quot;ADMIN&quot;)</span>
+<span class="fc" id="L44">                        .requestMatchers(&quot;/hopitaux/**&quot;).hasRole(&quot;ADMIN&quot;)</span>
+<span class="fc" id="L45">                        .requestMatchers(HttpMethod.POST, &quot;/personnel/**&quot;).hasRole(&quot;ADMIN&quot;)</span>
+<span class="fc" id="L46">                        .requestMatchers(HttpMethod.PUT, &quot;/personnel/**&quot;).hasRole(&quot;ADMIN&quot;)</span>
+<span class="fc" id="L47">                        .requestMatchers(HttpMethod.DELETE, &quot;/personnel/**&quot;).hasRole(&quot;ADMIN&quot;)</span>
+
+                        // Lecture personnel (médecins, admin)
+<span class="fc" id="L50">                        .requestMatchers(HttpMethod.GET, &quot;/personnel/**&quot;).hasAnyRole(&quot;ADMIN&quot;, &quot;MEDECIN&quot;)</span>
+
+                        // Accueil
+<span class="fc" id="L53">                        .requestMatchers(&quot;/admission/scan-carte&quot;).hasAnyRole(&quot;ACCUEIL&quot;, &quot;MEDECIN&quot;, &quot;INFIRMIER&quot;)</span>
+<span class="fc" id="L54">                        .requestMatchers(&quot;/admission/creer-passage&quot;).hasRole(&quot;ACCUEIL&quot;)</span>
+
+                        // Constantes
+<span class="fc" id="L57">                        .requestMatchers(HttpMethod.PUT, &quot;/passages/*/constantes&quot;).hasAnyRole(&quot;INFIRMIER&quot;, &quot;MEDECIN&quot;)</span>
+
+                        // Consultation (médecin)
+<span class="fc" id="L60">                        .requestMatchers(HttpMethod.PUT, &quot;/passages/*/consultation&quot;).hasRole(&quot;MEDECIN&quot;)</span>
+
+                        // Laboratoire
+<span class="fc" id="L63">                        .requestMatchers(&quot;/laboratoire/**&quot;).hasRole(&quot;LABORANTIN&quot;)</span>
+
+                        // Pharmacie
+<span class="fc" id="L66">                        .requestMatchers(&quot;/pharmacie/**&quot;).hasRole(&quot;PHARMACIEN&quot;)</span>
+
+                        // Historique patient (lui-même, médecin, infirmier)
+<span class="fc" id="L69">                        .requestMatchers(HttpMethod.GET, &quot;/patients/*/historique&quot;).hasAnyRole(&quot;MEDECIN&quot;, &quot;INFIRMIER&quot;, &quot;PATIENT&quot;)</span>
+
+                        // Gestion patients (CRUD admin/medecin)
+<span class="fc" id="L72">                        .requestMatchers(HttpMethod.POST, &quot;/patients/**&quot;).hasRole(&quot;ADMIN&quot;)</span>
+<span class="fc" id="L73">                        .requestMatchers(HttpMethod.PUT, &quot;/patients/**&quot;).hasRole(&quot;MEDECIN&quot;)</span>
+<span class="fc" id="L74">                        .requestMatchers(HttpMethod.GET, &quot;/patients/**&quot;).hasAnyRole(&quot;ADMIN&quot;, &quot;MEDECIN&quot;, &quot;ACCUEIL&quot;, &quot;INFIRMIER&quot;, &quot;PATIENT&quot;)</span>
+
+                        // Rapports
+<span class="fc" id="L77">                        .requestMatchers(&quot;/rapports/**&quot;).hasAnyRole(&quot;ADMIN&quot;, &quot;MEDECIN&quot;)</span>
+
+<span class="fc" id="L79">                        .anyRequest().authenticated()</span>
+                )
+<span class="fc" id="L81">                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);</span>
+<span class="fc" id="L82">        return http.build();</span>
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+<span class="fc" id="L87">        return new BCryptPasswordEncoder();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
